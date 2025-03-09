@@ -64,6 +64,8 @@ const FrenchFlashcardApp = () => {
     speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "fr-FR";
+    utterance.rate = 0.7;
+    utterance.pitch = 0.6;
     const frenchVoice = voices.find((voice) => voice.lang.startsWith("fr"));
     if (frenchVoice) utterance.voice = frenchVoice;
     speechSynthesis.speak(utterance);
@@ -196,9 +198,20 @@ const FrenchFlashcardApp = () => {
                       <p className="category-text">
                         Category: {currentCard.category}
                       </p>
-                      <p className="example-text">
+                      <div className="example-text">
                         Example: {currentCard.example}
-                      </p>
+                        <button
+                          className="audio-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            playAudio(currentCard.example);
+                          }}
+                        >
+                          <span role="img" aria-label="play">
+                            🔊
+                          </span>
+                        </button>
+                      </div>
                       <p className="example-meaning">
                         Example: {currentCard.exampleMeaning}
                       </p>
