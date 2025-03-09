@@ -1,43 +1,101 @@
 /* FlashcardApp.css */
 
 .flashcard-app {
-  font-family: sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-family: sans-serif;
+  background-color: #f0f0f0; /* Light gray background */
+  min-height: 100vh; /* Ensure it takes up the full viewport height */
+  padding: 20px;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 2em;
+  color: #333;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column; /* Stack search and categories vertically */
+  align-items: center; /* Center items horizontally */
+  width: 100%;
+  max-width: 1000px; /* Limit width for larger screens */
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  display: flex;
+  width: 100%;
+  margin-bottom: 10px; /* Space between search and categories */
+}
+
+.search-input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px 0 0 4px; /* Rounded left corners */
+  font-size: 16px;
+}
+
+.clear-button {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 0 4px 4px 0; /* Rounded right corners */
+  background-color: #eee;
+  cursor: pointer;
+   font-size: 16px;
+}
+.clear-button:hover{
+  background-color: #ddd;
 }
 
 .category-filters {
-  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  justify-content: center;
+  gap: 10px; /* Consistent spacing */
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 .category-filters button {
-  margin: 5px;
   padding: 8px 12px;
   background-color: #eee;
   border: 1px solid #ccc;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 14px;
 }
 
 .category-filters button.active {
-  background-color: #007bff;
+  background-color: #007bff; /* Blue for active */
   color: white;
   border-color: #007bff;
 }
-.card-navigation{
-    display:flex;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 1rem;
+.category-filters button:hover {
+  background-color:#ddd;
+}
+.card-container {
+  width: 100%;
+  max-width: 400px; /* Adjust as needed */
+  perspective: 1000px;
+  margin-bottom: 20px;
 }
 
 .flashcard {
-  width: 300px;
-  height: 200px;
-  perspective: 1000px; /* Needed for the 3D flip effect */
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  cursor: pointer;
+width: 100%; /* Use full width of container */
+height: 250px; /* Fixed height */
+border: 1px solid #ccc;
+border-radius: 8px;
+cursor: pointer;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  position: relative;
+
 }
 
 .flashcard-inner {
@@ -52,25 +110,116 @@
   transform: rotateY(180deg);
 }
 
-.flashcard-front,
-.flashcard-back {
+.flashcard-front, .flashcard-back {
   position: absolute;
   width: 100%;
   height: 100%;
-  backface-visibility: hidden; /* Hides the back of the card when flipped */
+  backface-visibility: hidden;
   display: flex;
+  flex-direction: column; /* Stack content vertically */
   justify-content: center;
   align-items: center;
-  font-size: 18px;
+  border-radius: 8px;
+   padding: 20px;
 }
 
 .flashcard-front {
-  background-color: #f0f0f0;
-  color: black;
+  background-color: #fff; /* White background */
+  color: #333;
 }
 
 .flashcard-back {
-  background-color: #ddd;
-  color: black;
+  background-color: #f8f8f8;
+  color: #333;
   transform: rotateY(180deg);
+}
+
+.card-text {
+  font-size: 1.5em; /* Larger font size */
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.category-text{
+    font-size: 1em;
+  text-align: center;
+}
+
+.audio-button {
+  background-color: transparent;
+  border: none;
+  font-size: 1.5em; /* Larger icon */
+  cursor: pointer;
+  margin-top: 10px;
+   color: #007bff; /* Blue color */
+}
+.audio-button:hover, .audio-button:focus{ /*add focus for accessibility*/
+  color: #0056b3; /* Darker blue on hover/focus */
+  outline: none; /* Remove default focus outline */
+}
+
+.card-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 400px; /* Match card container width */
+  margin-bottom: 10px;
+}
+
+.nav-button {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+.nav-button:hover{
+  background-color: #0056b3;
+}
+.nav-button:disabled {
+  background-color: #cccccc; /* Light grey for disabled */
+  color: #666666;          /* Darker grey text */
+  cursor: not-allowed;
+  border-color: #999999;
+}
+
+.card-counter {
+  font-size: 16px;
+  color: #555;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+   width: 100%;
+  max-width: 400px; /* Match card container width */
+  margin-bottom: 20px;
+}
+.checkbox-label {
+   font-size: 14px;
+}
+
+.option-button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #eee;
+  cursor: pointer;
+  font-size: 14px;
+}
+.option-button:hover{
+   background-color:#ddd;
+}
+
+.no-cards {
+  text-align: center;
+  font-size: 18px;
+  color: #555;
+    width: 100%;
+  max-width: 400px;
 }
