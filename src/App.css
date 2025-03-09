@@ -1,18 +1,29 @@
-/* FlashcardApp.css */
-
 .flashcard-app {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   font-family: sans-serif;
-  background-color: #f0f0f0; /* Light gray background */
-  min-height: 100vh; /* Ensure it takes up the full viewport height */
+  background-color: #f0f0f0;
+  min-height: 100vh;
   padding: 20px;
 }
 
-.header {
-  margin-bottom: 20px;
+#first-col {
+  padding: 10px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
 }
+
+#second-col {
+  padding: 100px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
 
 .header h1 {
   font-size: 2em;
@@ -21,44 +32,44 @@
 
 .controls {
   display: flex;
-  flex-direction: column; /* Stack search and categories vertically */
-  align-items: center; /* Center items horizontally */
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  max-width: 1000px; /* Limit width for larger screens */
-  margin-bottom: 20px;
+  max-width: 600px;
 }
 
 .search-bar {
   display: flex;
   width: 100%;
-  margin-bottom: 10px; /* Space between search and categories */
+  margin-bottom: 10px;
 }
 
 .search-input {
   flex-grow: 1;
   padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 4px 0 0 4px; /* Rounded left corners */
+  border-radius: 4px 0 0 4px;
   font-size: 16px;
 }
 
 .clear-button {
   padding: 10px 15px;
   border: 1px solid #ddd;
-  border-radius: 0 4px 4px 0; /* Rounded right corners */
+  border-radius: 0 4px 4px 0;
   background-color: #eee;
   cursor: pointer;
-   font-size: 16px;
+  font-size: 16px;
 }
-.clear-button:hover{
+
+.clear-button:hover {
   background-color: #ddd;
 }
 
 .category-filters {
   display: flex;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 10px; /* Consistent spacing */
+  gap: 10px;
   width: 100%;
   margin-bottom: 10px;
 }
@@ -73,29 +84,30 @@
 }
 
 .category-filters button.active {
-  background-color: #007bff; /* Blue for active */
+  background-color: #007bff;
   color: white;
   border-color: #007bff;
 }
+
 .category-filters button:hover {
-  background-color:#ddd;
+  background-color: #ddd;
 }
+
 .card-container {
   width: 100%;
-  max-width: 400px; /* Adjust as needed */
+  max-width: 400px;
   perspective: 1000px;
   margin-bottom: 20px;
 }
 
 .flashcard {
-width: 100%; /* Use full width of container */
-height: 250px; /* Fixed height */
-border: 1px solid #ccc;
-border-radius: 8px;
-cursor: pointer;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  width: 100%;
+  height: 250px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
-
 }
 
 .flashcard-inner {
@@ -110,21 +122,22 @@ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   transform: rotateY(180deg);
 }
 
-.flashcard-front, .flashcard-back {
+.flashcard-front,
+.flashcard-back {
   position: absolute;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
   display: flex;
-  flex-direction: column; /* Stack content vertically */
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
-   padding: 20px;
+  padding: 20px;
 }
 
 .flashcard-front {
-  background-color: #fff; /* White background */
+  background-color: #fff;
   color: #333;
 }
 
@@ -135,35 +148,36 @@ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 .card-text {
-  font-size: 1.5em; /* Larger font size */
+  font-size: 1.5em;
   margin-bottom: 10px;
   text-align: center;
 }
 
-.category-text{
-    font-size: 1em;
+.category-text {
+  font-size: 1em;
   text-align: center;
 }
 
 .audio-button {
   background-color: transparent;
   border: none;
-  font-size: 1.5em; /* Larger icon */
+  font-size: 1.5em;
   cursor: pointer;
   margin-top: 10px;
-   color: #007bff; /* Blue color */
+  color: #007bff;
 }
-.audio-button:hover, .audio-button:focus{ /*add focus for accessibility*/
-  color: #0056b3; /* Darker blue on hover/focus */
-  outline: none; /* Remove default focus outline */
+
+.audio-button:hover,
+.audio-button:focus {
+  color: #0056b3;
+  outline: none;
 }
 
 .card-navigation {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  max-width: 400px; /* Match card container width */
+  width: 500px;
   margin-bottom: 10px;
 }
 
@@ -176,12 +190,14 @@ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   cursor: pointer;
   font-size: 16px;
 }
-.nav-button:hover{
+
+.nav-button:hover {
   background-color: #0056b3;
 }
+
 .nav-button:disabled {
-  background-color: #cccccc; /* Light grey for disabled */
-  color: #666666;          /* Darker grey text */
+  background-color: #cccccc;
+  color: #666666;
   cursor: not-allowed;
   border-color: #999999;
 }
@@ -196,12 +212,13 @@ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
-   width: 100%;
-  max-width: 400px; /* Match card container width */
+  width: 100%;
+  max-width: 400px;
   margin-bottom: 20px;
 }
+
 .checkbox-label {
-   font-size: 14px;
+  font-size: 14px;
 }
 
 .option-button {
@@ -212,14 +229,39 @@ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   cursor: pointer;
   font-size: 14px;
 }
-.option-button:hover{
-   background-color:#ddd;
+.option-button-active{
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  background-color: #007bff; /* Blue for active */
+  color: white;
+  border-color: #007bff;
+}
+
+.option-button:hover {
+  background-color: #ddd;
+}
+.option-button-active:hover{
+  background-color: #0056b3;
 }
 
 .no-cards {
   text-align: center;
   font-size: 18px;
   color: #555;
-    width: 100%;
+  width: 100%;
   max-width: 400px;
+}
+
+.example-text, .example-meaning-text {
+  font-size: 1.2em;
+  text-align: center;
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+.example-meaning-text{
+   font-style: italic;
 }

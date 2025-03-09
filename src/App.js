@@ -12,6 +12,7 @@ const FrenchFlashcardApp = () => {
   const [speechSynthesis, setSpeechSynthesis] = useState(null);
   const [voices, setVoices] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showExample, setShowExample] = useState(false); // Added state for showing the example
 
   useEffect(() => {
     let newFilteredFlashcards = flashcards;
@@ -70,12 +71,14 @@ const FrenchFlashcardApp = () => {
 
   const flipCard = () => {
     setIsFlipped(!isFlipped);
+    setShowExample(false); // Hide the example when flipping
   };
 
   const nextCard = () => {
     const newIndex = (currentCardIndex + 1) % filteredFlashcards.length; // Loop back to the start
     setCurrentCardIndex(newIndex);
     setIsFlipped(false);
+    setShowExample(false); // Hide example when switching
     speechSynthesis?.cancel();
   };
 
@@ -85,6 +88,7 @@ const FrenchFlashcardApp = () => {
       filteredFlashcards.length; // Loop to the end
     setCurrentCardIndex(newIndex);
     setIsFlipped(false);
+    setShowExample(false); // Hide example when switching
     speechSynthesis?.cancel();
   };
 
@@ -98,9 +102,21 @@ const FrenchFlashcardApp = () => {
     setSelectedCategories(newCategories);
   };
 
+  const toggleShowExample = (e) => {
+    e.stopPropagation(); // Prevent card flip
+    setShowExample(!showExample);
+    setIsFlipped(false); // important to see front first
+  };
+
   const handleShowAnswerChange = () => {
     setShowAnswerImmediately(!showAnswerImmediately);
-    setIsFlipped(true);
+    if (!showAnswerImmediately) {
+      // Only flip if going *to* "Show Answer Immediately"
+      setIsFlipped(true);
+    } else {
+      setIsFlipped(false); // if going *to* "Show Answer Immediately" is off
+    }
+    setShowExample(false);
   };
 
   const currentCard =
@@ -108,117 +124,124 @@ const FrenchFlashcardApp = () => {
 
   return (
     <div className="flashcard-app">
-      <div className="header">
-        <h1>French Vocabulary Flashcards</h1>
-      </div>
-
-      <div className="controls">
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search for words..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-          <button onClick={() => setSearchTerm("")} className="clear-button">
-            Clear
-          </button>
+      <div id="first-col">
+        <div className="header">
+          <h1>French Vocabulary Flashcards</h1>
         </div>
 
-        <div className="category-filters">
-          <button
-            className={selectedCategories.size === 0 ? "active" : ""}
-            onClick={() => setSelectedCategories(new Set())}
-          >
-            All
-          </button>
-          {[...new Set(flashcards.map((card) => card.category))].map(
-            (category) => (
-              <button
-                key={category}
-                className={selectedCategories.has(category) ? "active" : ""}
-                onClick={() => toggleCategory(category)}
-              >
-                {category}
-              </button>
-            )
-          )}
-        </div>
-      </div>
+        <div className="controls">
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="Search for words..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+            <button onClick={() => setSearchTerm("")} className="clear-button">
+              Clear
+            </button>
+          </div>
 
-      <div className="card-container">
-        {currentCard ? (
-          <div
-            className={`flashcard ${isFlipped ? "flipped" : ""}`}
-            onClick={!showAnswerImmediately ? flipCard : undefined}
-          >
-            <div className="flashcard-inner">
-              <div className="flashcard-front">
-                <p className="card-text">{currentCard.french}</p>
+          <div className="category-filters">
+            <button
+              className={selectedCategories.size === 0 ? "active" : ""}
+              onClick={() => setSelectedCategories(new Set())}
+            >
+              All
+            </button>
+            {[...new Set(flashcards.map((card) => card.category))].map(
+              (category) => (
                 <button
-                  className="audio-button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    playAudio(currentCard.french);
-                  }}
+                  key={category}
+                  className={selectedCategories.has(category) ? "active" : ""}
+                  onClick={() => toggleCategory(category)}
                 >
-                  <span role="img" aria-label="play">
-                    🔊
-                  </span>{" "}
-                  {/* Speaker icon */}
+                  {category}
                 </button>
-              </div>
-              <div className="flashcard-back">
-                <p className="card-text">{currentCard.meaning}</p>
-                <p className="category-text">
-                  Category: {currentCard.category}
-                </p>
+              )
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div id="second-col">
+        <div className="card-container">
+          {currentCard ? (
+            <div
+              className={`flashcard ${isFlipped ? "flipped" : ""}`}
+              onClick={
+                !showAnswerImmediately && !showExample ? flipCard : undefined
+              }
+            >
+              <div className="flashcard-inner">
+                <div className="flashcard-front">
+                  <p className="card-text">{currentCard.french}</p>
+                  <button
+                    className="audio-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      playAudio(currentCard.french);
+                    }}
+                  >
+                    <span role="img" aria-label="play">
+                      🔊
+                    </span>
+                  </button>
+                </div>
+                <div className="flashcard-back">
+                  {!showExample && (
+                    <>
+                      <p className="card-text">{currentCard.meaning}</p>
+                      <p className="category-text">
+                        Category: {currentCard.category}
+                      </p>
+                      <p className="example-text">
+                        Example: {currentCard.example}
+                      </p>
+                      <p className="example-meaning">
+                        Example: {currentCard.exampleMeaning}
+                      </p>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="no-cards">No flashcards to display.</div>
-        )}
-      </div>
-      <div className="card-navigation">
-        <button
-          onClick={prevCard}
-          disabled={currentCardIndex === 0}
-          className="nav-button"
-        >
-          ← Previous
-        </button>
-        <span className="card-counter">
-          {filteredFlashcards.length > 0
-            ? `${currentCardIndex + 1} / ${filteredFlashcards.length}`
-            : "0/0"}
-        </span>
-        <button
-          onClick={nextCard}
-          disabled={filteredFlashcards.length === 0}
-          className="nav-button"
-        >
-          Next →
-        </button>
-      </div>
-      <div className="options">
-        <label className="checkbox-label">
-          <input
-            type="checkbox"
-            checked={showAnswerImmediately}
-            onChange={handleShowAnswerChange}
-          />
-          Show Answer Immediately
-        </label>
-        <button className="option-button" disabled>
-          ☆ Add to Favorites
-        </button>{" "}
-        {/*Added disabled */}
-        <button className="option-button" disabled>
-          Mark as Difficult
-        </button>{" "}
-        {/*Added disabled */}
+          ) : (
+            <div className="no-cards">No flashcards to display.</div>
+          )}
+        </div>
+        <div className="card-navigation">
+          <button
+            onClick={prevCard}
+            disabled={currentCardIndex === 0}
+            className="nav-button"
+          >
+            ← Previous
+          </button>
+          <span className="card-counter">
+            {filteredFlashcards.length > 0
+              ? `${currentCardIndex + 1} / ${filteredFlashcards.length}`
+              : "0/0"}
+          </span>
+          <button
+            onClick={nextCard}
+            disabled={filteredFlashcards.length === 0}
+            className="nav-button"
+          >
+            Next →
+          </button>
+        </div>
+        {/* <div className="options">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={showAnswerImmediately}
+              onChange={handleShowAnswerChange}
+            />
+            Show Answer Immediately
+          </label>
+        </div> */}
       </div>
     </div>
   );
