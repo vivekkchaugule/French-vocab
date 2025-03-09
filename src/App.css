@@ -1,38 +1,76 @@
-.App {
-  text-align: center;
-}
+/* FlashcardApp.css */
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.flashcard-app {
+  font-family: sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+.category-filters {
+  margin-bottom: 20px;
+}
+
+.category-filters button {
+  margin: 5px;
+  padding: 8px 12px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.category-filters button.active {
+  background-color: #007bff;
   color: white;
+  border-color: #007bff;
+}
+.card-navigation{
+    display:flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
-.App-link {
-  color: #61dafb;
+.flashcard {
+  width: 300px;
+  height: 200px;
+  perspective: 1000px; /* Needed for the 3D flip effect */
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  cursor: pointer;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden; /* Hides the back of the card when flipped */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
+.flashcard-front {
+  background-color: #f0f0f0;
+  color: black;
+}
+
+.flashcard-back {
+  background-color: #ddd;
+  color: black;
+  transform: rotateY(180deg);
 }
