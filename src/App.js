@@ -8,7 +8,7 @@ const FrenchFlashcardApp = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState(new Set());
   const [filteredFlashcards, setFilteredFlashcards] = useState([]);
-  const [showAnswerImmediately, setShowAnswerImmediately] = useState(false);
+  const [showAnswerImmediately] = useState(false);
   const [speechSynthesis, setSpeechSynthesis] = useState(null);
   const [voices, setVoices] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
