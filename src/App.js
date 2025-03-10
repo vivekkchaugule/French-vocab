@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import Vocab from "./Vocab";
+import Vocab from "./Vocab-grok";
 
 const FrenchFlashcardApp = () => {
   const flashcards = Vocab;
