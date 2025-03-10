@@ -104,22 +104,6 @@ const FrenchFlashcardApp = () => {
     setSelectedCategories(newCategories);
   };
 
-  const toggleShowExample = (e) => {
-    e.stopPropagation(); // Prevent card flip
-    setShowExample(!showExample);
-    setIsFlipped(false); // important to see front first
-  };
-
-  const handleShowAnswerChange = () => {
-    setShowAnswerImmediately(!showAnswerImmediately);
-    if (!showAnswerImmediately) {
-      // Only flip if going *to* "Show Answer Immediately"
-      setIsFlipped(true);
-    } else {
-      setIsFlipped(false); // if going *to* "Show Answer Immediately" is off
-    }
-    setShowExample(false);
-  };
 
   const currentCard =
     filteredFlashcards.length > 0 ? filteredFlashcards[currentCardIndex] : null;
