@@ -63,7 +63,7 @@ const FrenchFlashcardApp = () => {
     }
     
     setIsFlipped(false);
-  }, [flashcards, selectedCategories, searchTerm, showFavoritesOnly, favorites]);
+  }, [flashcards, selectedCategories, searchTerm, showFavoritesOnly, favorites, currentCard]);
 
   useEffect(() => {
     if ("speechSynthesis" in window) {
