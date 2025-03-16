@@ -248,36 +248,49 @@ const FrenchFlashcardApp = () => {
   const renderListView = () => (
     <div className="space-y-4">
       <div className="bg-white rounded-lg shadow-lg p-4">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Favorite Words</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-4">All Words</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredFlashcards.map((card) => (
-            <div
-              key={card.french}
-              className="bg-gray-50 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-semibold text-gray-800">{card.french}</h3>
+          {flashcards
+            .sort((a, b) => {
+              // Sort favorites to the top
+              const aIsFavorite = favorites.has(a.french);
+              const bIsFavorite = favorites.has(b.french);
+              if (aIsFavorite && !bIsFavorite) return -1;
+              if (!aIsFavorite && bIsFavorite) return 1;
+              return 0;
+            })
+            .map((card) => (
+              <div
+                key={card.french}
+                className={`bg-gray-50 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow ${
+                  favorites.has(card.french) ? 'border-2 border-pink-200' : ''
+                }`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-semibold text-gray-800">{card.french}</h3>
+                  <button
+                    onClick={(e) => toggleFavorite(e, card)}
+                    className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                  >
+                    <span className="text-xl">
+                      {favorites.has(card.french) ? "❤️" : "🤍"}
+                    </span>
+                  </button>
+                </div>
+                <p className="text-gray-600 mb-2">{card.meaning}</p>
+                <p className="text-sm text-gray-500 mb-2">Category: {card.category}</p>
+                <div className="space-y-1">
+                  <p className="text-sm text-gray-700">Example: {card.example}</p>
+                  <p className="text-sm text-gray-600">{card.exampleMeaning}</p>
+                </div>
                 <button
-                  onClick={(e) => toggleFavorite(e, card)}
-                  className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                  onClick={() => playAudio(card.french)}
+                  className="mt-2 p-2 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors"
                 >
-                  <span className="text-xl">❤️</span>
+                  <span role="img" aria-label="play">🔊</span>
                 </button>
               </div>
-              <p className="text-gray-600 mb-2">{card.meaning}</p>
-              <p className="text-sm text-gray-500 mb-2">Category: {card.category}</p>
-              <div className="space-y-1">
-                <p className="text-sm text-gray-700">Example: {card.example}</p>
-                <p className="text-sm text-gray-600">{card.exampleMeaning}</p>
-              </div>
-              <button
-                onClick={() => playAudio(card.french)}
-                className="mt-2 p-2 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors"
-              >
-                <span role="img" aria-label="play">🔊</span>
-              </button>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </div>
