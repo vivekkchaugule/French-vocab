@@ -20,6 +20,9 @@ const FrenchFlashcardApp = () => {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [viewMode, setViewMode] = useState('flashcard'); // 'flashcard' or 'list'
 
+  const currentCard =
+    filteredFlashcards.length > 0 ? filteredFlashcards[currentCardIndex] : null;
+
   // Save favorites to localStorage whenever they change
   useEffect(() => {
     try {
@@ -144,9 +147,7 @@ const FrenchFlashcardApp = () => {
     setFavorites(newFavorites);
   };
 
-  const currentCard =
-    filteredFlashcards.length > 0 ? filteredFlashcards[currentCardIndex] : null;
-
+  
   const renderFlashcardView = () => (
     <div className="space-y-6">
       <div className="aspect-[3/2] w-full max-w-lg mx-auto">
