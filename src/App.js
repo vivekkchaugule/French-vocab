@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./App.css";
 import Vocab from "./Vocab-grok";
 
 const FrenchFlashcardApp = () => {
@@ -12,7 +11,7 @@ const FrenchFlashcardApp = () => {
   const [speechSynthesis, setSpeechSynthesis] = useState(null);
   const [voices, setVoices] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showExample, setShowExample] = useState(false); // Added state for showing the example
+  const [showExample, setShowExample] = useState(false);
 
   useEffect(() => {
     let newFilteredFlashcards = flashcards;
@@ -104,141 +103,156 @@ const FrenchFlashcardApp = () => {
     setSelectedCategories(newCategories);
   };
 
-
   const currentCard =
     filteredFlashcards.length > 0 ? filteredFlashcards[currentCardIndex] : null;
 
   return (
-    <div className="flashcard-app">
-      <div id="first-col">
-        <div className="header">
-          <h1>French Vocabulary Flashcards</h1>
-        </div>
+    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* First Column */}
+          <div className="space-y-6">
+            <div className="text-center">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                French Vocabulary Flashcards
+              </h1>
+            </div>
 
-        <div className="controls">
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search for words..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
-            />
-            <button onClick={() => setSearchTerm("")} className="clear-button">
-              Clear
-            </button>
-          </div>
-
-          <div className="category-filters">
-            <button
-              className={selectedCategories.size === 0 ? "active" : ""}
-              onClick={() => setSelectedCategories(new Set())}
-            >
-              All
-            </button>
-            {[...new Set(flashcards.map((card) => card.category))].map(
-              (category) => (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  placeholder="Search for words..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
                 <button
-                  key={category}
-                  className={selectedCategories.has(category) ? "active" : ""}
-                  onClick={() => toggleCategory(category)}
+                  onClick={() => setSearchTerm("")}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
                 >
-                  {category}
+                  Clear
                 </button>
-              )
-            )}
-          </div>
-        </div>
-      </div>
+              </div>
 
-      <div id="second-col">
-        <div className="card-container">
-          {currentCard ? (
-            <div
-              className={`flashcard ${isFlipped ? "flipped" : ""}`}
-              onClick={
-                !showAnswerImmediately && !showExample ? flipCard : undefined
-              }
-            >
-              <div className="flashcard-inner">
-                <div className="flashcard-front">
-                  <p className="card-text">{currentCard.french}</p>
-                  <button
-                    className="audio-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      playAudio(currentCard.french);
-                    }}
-                  >
-                    <span role="img" aria-label="play">
-                      🔊
-                    </span>
-                  </button>
-                </div>
-                <div className="flashcard-back">
-                  {!showExample && (
-                    <>
-                      <p className="card-text">{currentCard.meaning}</p>
-                      <p className="category-text">
-                        Category: {currentCard.category}
-                      </p>
-                      <div className="example-text">
-                        Example: {currentCard.example}
-                        <button
-                          className="audio-button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            playAudio(currentCard.example);
-                          }}
-                        >
-                          <span role="img" aria-label="play">
-                            🔊
-                          </span>
-                        </button>
-                      </div>
-                      <p className="example-meaning">
-                        Example: {currentCard.exampleMeaning}
-                      </p>
-                    </>
-                  )}
-                </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    selectedCategories.size === 0
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                  onClick={() => setSelectedCategories(new Set())}
+                >
+                  All
+                </button>
+                {[...new Set(flashcards.map((card) => card.category))].map(
+                  (category) => (
+                    <button
+                      key={category}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        selectedCategories.has(category)
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      }`}
+                      onClick={() => toggleCategory(category)}
+                    >
+                      {category}
+                    </button>
+                  )
+                )}
               </div>
             </div>
-          ) : (
-            <div className="no-cards">No flashcards to display.</div>
-          )}
+          </div>
+
+          {/* Second Column */}
+          <div className="space-y-6">
+            <div className="aspect-[3/2] w-full max-w-lg mx-auto">
+              {currentCard ? (
+                <div
+                  className={`flashcard ${isFlipped ? "flipped" : ""}`}
+                  onClick={!showAnswerImmediately && !showExample ? flipCard : undefined}
+                >
+                  <div className="flashcard-inner">
+                    <div className="flashcard-front bg-white">
+                      <p className="text-2xl md:text-3xl font-bold text-gray-800">
+                        {currentCard.french}
+                      </p>
+                      <button
+                        className="audio-button mt-4"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          playAudio(currentCard.french);
+                        }}
+                      >
+                        <span role="img" aria-label="play">
+                          🔊
+                        </span>
+                      </button>
+                    </div>
+                    <div className="flashcard-back">
+                      {!showExample && (
+                        <div className="space-y-4">
+                          <p className="text-2xl md:text-3xl font-bold text-gray-800">
+                            {currentCard.meaning}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            Category: {currentCard.category}
+                          </p>
+                          <div className="space-y-2">
+                            <p className="text-lg text-gray-700">
+                              Example: {currentCard.example}
+                            </p>
+                            <button
+                              className="audio-button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                playAudio(currentCard.example);
+                              }}
+                            >
+                              <span role="img" aria-label="play">
+                                🔊
+                              </span>
+                            </button>
+                          </div>
+                          <p className="text-lg text-gray-700">
+                            {currentCard.exampleMeaning}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-full bg-white rounded-lg shadow-lg">
+                  <p className="text-xl text-gray-600">No flashcards to display.</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-center gap-4">
+              <button
+                onClick={prevCard}
+                disabled={currentCardIndex === 0}
+                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                ← Previous
+              </button>
+              <span className="text-gray-600">
+                {filteredFlashcards.length > 0
+                  ? `${currentCardIndex + 1} / ${filteredFlashcards.length}`
+                  : "0/0"}
+              </span>
+              <button
+                onClick={nextCard}
+                disabled={filteredFlashcards.length === 0}
+                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next →
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="card-navigation">
-          <button
-            onClick={prevCard}
-            disabled={currentCardIndex === 0}
-            className="nav-button"
-          >
-            ← Previous
-          </button>
-          <span className="card-counter">
-            {filteredFlashcards.length > 0
-              ? `${currentCardIndex + 1} / ${filteredFlashcards.length}`
-              : "0/0"}
-          </span>
-          <button
-            onClick={nextCard}
-            disabled={filteredFlashcards.length === 0}
-            className="nav-button"
-          >
-            Next →
-          </button>
-        </div>
-        {/* <div className="options">
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={showAnswerImmediately}
-              onChange={handleShowAnswerChange}
-            />
-            Show Answer Immediately
-          </label>
-        </div> */}
       </div>
     </div>
   );
