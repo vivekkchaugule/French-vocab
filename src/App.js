@@ -12,9 +12,32 @@ const FrenchFlashcardApp = () => {
   const [voices, setVoices] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showExample, setShowExample] = useState(false);
+  const [favorites, setFavorites] = useState(new Set());
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [viewMode, setViewMode] = useState('flashcard'); // 'flashcard' or 'list'
+
+  // Load favorites from localStorage on initial render
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('frenchVocabFavorites');
+    if (savedFavorites) {
+      setFavorites(new Set(JSON.parse(savedFavorites)));
+    }
+  }, []);
+
+  // Save favorites to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('frenchVocabFavorites', JSON.stringify([...favorites]));
+  }, [favorites]);
 
   useEffect(() => {
     let newFilteredFlashcards = flashcards;
+
+    // Filter by favorites if enabled
+    if (showFavoritesOnly) {
+      newFilteredFlashcards = newFilteredFlashcards.filter(card => 
+        favorites.has(card.french)
+      );
+    }
 
     // Filter by category
     if (selectedCategories.size > 0) {
@@ -35,7 +58,7 @@ const FrenchFlashcardApp = () => {
     setFilteredFlashcards(newFilteredFlashcards);
     setCurrentCardIndex(0);
     setIsFlipped(false);
-  }, [flashcards, selectedCategories, searchTerm]);
+  }, [flashcards, selectedCategories, searchTerm, showFavoritesOnly, favorites]);
 
   useEffect(() => {
     if ("speechSynthesis" in window) {
@@ -103,8 +126,157 @@ const FrenchFlashcardApp = () => {
     setSelectedCategories(newCategories);
   };
 
+  const toggleFavorite = (e, card) => {
+    e.stopPropagation(); // Prevent card flip when clicking the heart
+    if (!card) return;
+    
+    const newFavorites = new Set(favorites);
+    if (newFavorites.has(card.french)) {
+      newFavorites.delete(card.french);
+    } else {
+      newFavorites.add(card.french);
+    }
+    setFavorites(newFavorites);
+  };
+
   const currentCard =
     filteredFlashcards.length > 0 ? filteredFlashcards[currentCardIndex] : null;
+
+  const renderFlashcardView = () => (
+    <div className="space-y-6">
+      <div className="aspect-[3/2] w-full max-w-lg mx-auto">
+        {currentCard ? (
+          <div
+            className={`flashcard ${isFlipped ? "flipped" : ""}`}
+            onClick={!showAnswerImmediately && !showExample ? flipCard : undefined}
+          >
+            <div className="flashcard-inner">
+              <div className="flashcard-front bg-white">
+                <button
+                  onClick={(e) => toggleFavorite(e, currentCard)}
+                  className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                  aria-label="Toggle favorite"
+                >
+                  <span className="text-2xl">
+                    {favorites.has(currentCard.french) ? "❤️" : "🤍"}
+                  </span>
+                </button>
+                <p className="text-2xl md:text-3xl font-bold text-gray-800">
+                  {currentCard.french}
+                </p>
+                <button
+                  className="audio-button mt-4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    playAudio(currentCard.french);
+                  }}
+                >
+                  <span role="img" aria-label="play">
+                    🔊
+                  </span>
+                </button>
+              </div>
+              <div className="flashcard-back">
+                {!showExample && (
+                  <div className="space-y-4">
+                    <p className="text-2xl md:text-3xl font-bold text-gray-800">
+                      {currentCard.meaning}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Category: {currentCard.category}
+                    </p>
+                    <div className="space-y-2">
+                      <p className="text-lg text-gray-700">
+                        Example: {currentCard.example}
+                      </p>
+                      <button
+                        className="audio-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          playAudio(currentCard.example);
+                        }}
+                      >
+                        <span role="img" aria-label="play">
+                          🔊
+                        </span>
+                      </button>
+                    </div>
+                    <p className="text-lg text-gray-700">
+                      {currentCard.exampleMeaning}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-full bg-white rounded-lg shadow-lg">
+            <p className="text-xl text-gray-600">No flashcards to display.</p>
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center justify-center gap-4">
+        <button
+          onClick={prevCard}
+          disabled={currentCardIndex === 0}
+          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          ← Previous
+        </button>
+        <span className="text-gray-600">
+          {filteredFlashcards.length > 0
+            ? `${currentCardIndex + 1} / ${filteredFlashcards.length}`
+            : "0/0"}
+        </span>
+        <button
+          onClick={nextCard}
+          disabled={filteredFlashcards.length === 0}
+          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderListView = () => (
+    <div className="space-y-4">
+      <div className="bg-white rounded-lg shadow-lg p-4">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Favorite Words</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredFlashcards.map((card) => (
+            <div
+              key={card.french}
+              className="bg-gray-50 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="text-lg font-semibold text-gray-800">{card.french}</h3>
+                <button
+                  onClick={(e) => toggleFavorite(e, card)}
+                  className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                >
+                  <span className="text-xl">❤️</span>
+                </button>
+              </div>
+              <p className="text-gray-600 mb-2">{card.meaning}</p>
+              <p className="text-sm text-gray-500 mb-2">Category: {card.category}</p>
+              <div className="space-y-1">
+                <p className="text-sm text-gray-700">Example: {card.example}</p>
+                <p className="text-sm text-gray-600">{card.exampleMeaning}</p>
+              </div>
+              <button
+                onClick={() => playAudio(card.french)}
+                className="mt-2 p-2 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors"
+              >
+                <span role="img" aria-label="play">🔊</span>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
@@ -116,6 +288,33 @@ const FrenchFlashcardApp = () => {
               <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
                 French Vocabulary Flashcards
               </h1>
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <span className="text-gray-600">
+                  Favorites: {favorites.size}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setViewMode('flashcard')}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      viewMode === 'flashcard'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    Flashcards
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      viewMode === 'list'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    List View
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -138,13 +337,26 @@ const FrenchFlashcardApp = () => {
               <div className="flex flex-wrap gap-2">
                 <button
                   className={`px-4 py-2 rounded-lg transition-colors ${
-                    selectedCategories.size === 0
+                    selectedCategories.size === 0 && !showFavoritesOnly
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
-                  onClick={() => setSelectedCategories(new Set())}
+                  onClick={() => {
+                    setSelectedCategories(new Set());
+                    setShowFavoritesOnly(false);
+                  }}
                 >
                   All
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    showFavoritesOnly
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                  onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                >
+                  Favorites Only
                 </button>
                 {[...new Set(flashcards.map((card) => card.category))].map(
                   (category) => (
@@ -167,90 +379,7 @@ const FrenchFlashcardApp = () => {
 
           {/* Second Column */}
           <div className="space-y-6">
-            <div className="aspect-[3/2] w-full max-w-lg mx-auto">
-              {currentCard ? (
-                <div
-                  className={`flashcard ${isFlipped ? "flipped" : ""}`}
-                  onClick={!showAnswerImmediately && !showExample ? flipCard : undefined}
-                >
-                  <div className="flashcard-inner">
-                    <div className="flashcard-front bg-white">
-                      <p className="text-2xl md:text-3xl font-bold text-gray-800">
-                        {currentCard.french}
-                      </p>
-                      <button
-                        className="audio-button mt-4"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          playAudio(currentCard.french);
-                        }}
-                      >
-                        <span role="img" aria-label="play">
-                          🔊
-                        </span>
-                      </button>
-                    </div>
-                    <div className="flashcard-back">
-                      {!showExample && (
-                        <div className="space-y-4">
-                          <p className="text-2xl md:text-3xl font-bold text-gray-800">
-                            {currentCard.meaning}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Category: {currentCard.category}
-                          </p>
-                          <div className="space-y-2">
-                            <p className="text-lg text-gray-700">
-                              Example: {currentCard.example}
-                            </p>
-                            <button
-                              className="audio-button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                playAudio(currentCard.example);
-                              }}
-                            >
-                              <span role="img" aria-label="play">
-                                🔊
-                              </span>
-                            </button>
-                          </div>
-                          <p className="text-lg text-gray-700">
-                            {currentCard.exampleMeaning}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center h-full bg-white rounded-lg shadow-lg">
-                  <p className="text-xl text-gray-600">No flashcards to display.</p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center justify-center gap-4">
-              <button
-                onClick={prevCard}
-                disabled={currentCardIndex === 0}
-                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                ← Previous
-              </button>
-              <span className="text-gray-600">
-                {filteredFlashcards.length > 0
-                  ? `${currentCardIndex + 1} / ${filteredFlashcards.length}`
-                  : "0/0"}
-              </span>
-              <button
-                onClick={nextCard}
-                disabled={filteredFlashcards.length === 0}
-                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next →
-              </button>
-            </div>
+            {viewMode === 'flashcard' ? renderFlashcardView() : renderListView()}
           </div>
         </div>
       </div>
