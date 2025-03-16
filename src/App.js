@@ -12,21 +12,21 @@ const FrenchFlashcardApp = () => {
   const [voices, setVoices] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showExample, setShowExample] = useState(false);
-  const [favorites, setFavorites] = useState(new Set());
+  const [favorites, setFavorites] = useState(() => {
+    // Initialize favorites from localStorage during component initialization
+    const savedFavorites = localStorage.getItem('frenchVocabFavorites');
+    return savedFavorites ? new Set(JSON.parse(savedFavorites)) : new Set();
+  });
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [viewMode, setViewMode] = useState('flashcard'); // 'flashcard' or 'list'
 
-  // Load favorites from localStorage on initial render
-  useEffect(() => {
-    const savedFavorites = localStorage.getItem('frenchVocabFavorites');
-    if (savedFavorites) {
-      setFavorites(new Set(JSON.parse(savedFavorites)));
-    }
-  }, []);
-
   // Save favorites to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('frenchVocabFavorites', JSON.stringify([...favorites]));
+    try {
+      localStorage.setItem('frenchVocabFavorites', JSON.stringify([...favorites]));
+    } catch (error) {
+      console.error('Error saving favorites to localStorage:', error);
+    }
   }, [favorites]);
 
   useEffect(() => {
@@ -56,7 +56,12 @@ const FrenchFlashcardApp = () => {
     }
 
     setFilteredFlashcards(newFilteredFlashcards);
-    setCurrentCardIndex(0);
+    
+    // Only reset card index if the current card is no longer in the filtered list
+    if (currentCard && !newFilteredFlashcards.find(card => card.french === currentCard.french)) {
+      setCurrentCardIndex(0);
+    }
+    
     setIsFlipped(false);
   }, [flashcards, selectedCategories, searchTerm, showFavoritesOnly, favorites]);
 
